@@ -40,5 +40,19 @@ def create_report():
     return jsonify(report), 201
 
 
+@app.route("/reports", methods=["GET"])
+def get_all_reports():
+    return jsonify(reports)
+
+
+@app.route("/reports/<int:id_r>", methods=["GET"])
+def get_report_by_id(id_r):
+    for report in reports:
+        if report["id_r"] == id_r:
+            return jsonify(report)
+
+    return jsonify({"error": "Report not found"}), 404
+
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000)
