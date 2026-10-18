@@ -54,5 +54,38 @@ def get_report_by_id(id_r):
     return jsonify({"error": "Report not found"}), 404
 
 
+# ===== STUDENTS (private) =====
+@app.route("/students", methods=["POST"])
+def create_student():
+    global next_student_id
+
+    data = request.get_json()
+    student = {
+        "id_s": next_student_id,
+        "first_name": data["first_name"],
+        "last_name": data["last_name"],
+        "level": data["level"],
+        "double_major": data["double_major"],
+    }
+    next_student_id += 1
+    students.append(student)
+
+    return jsonify(student), 201
+
+
+@app.route("/students", methods=["GET"])
+def get_all_students():
+    return jsonify(students)
+
+
+@app.route("/students/<int:id_s>", methods=["GET"])
+def get_student_by_id(id_s):
+    for student in students:
+        if student["id_s"] == id_s:
+            return jsonify(student)
+
+    return jsonify({"error": "Student not found"}), 404
+
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000)
