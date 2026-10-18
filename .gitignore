@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+ROADMAP.md
+STORY.md
+PROMPTS.md
