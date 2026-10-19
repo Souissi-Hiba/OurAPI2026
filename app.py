@@ -2,6 +2,9 @@
 # It provides simple endpoints for a web services course project.
 # The API keeps data in memory so the behavior is easy to understand.
 
+import secrets
+import time
+
 from flask import Flask, jsonify, request
 
 # ===== SETUP =====
@@ -12,6 +15,25 @@ students = []
 reports = []
 next_student_id = 1
 next_report_id = 1
+current_token = None
+token_expires_at = 0
+
+# ===== HELPERS =====
+def check_token():
+    authorization = request.headers.get("Authorization")
+    if not authorization:
+        return jsonify({"error": "Token required"}), 401
+
+    parts = authorization.split()
+    token = parts[1] if len(parts) == 2 and parts[0] == "Bearer" else ""
+
+    if token != current_token:
+        return jsonify({"error": "Invalid token"}), 403
+
+    if time.time() > token_expires_at:
+        return jsonify({"error": "Token expired"}), 401
+
+    return None
 
 # ===== HEALTH CHECK =====
 @app.route("/")
@@ -75,11 +97,19 @@ def create_student():
 
 @app.route("/students", methods=["GET"])
 def get_all_students():
+    token_error = check_token()
+    if token_error:
+        return token_error
+
     return jsonify(students)
 
 
 @app.route("/students/<int:id_s>", methods=["GET"])
 def get_student_by_id(id_s):
+    token_error = check_token()
+    if token_error:
+        return token_error
+
     for student in students:
         if student["id_s"] == id_s:
             return jsonify(student)
@@ -87,5 +117,30 @@ def get_student_by_id(id_s):
     return jsonify({"error": "Student not found"}), 404
 
 
+# ===== TOKEN =====
+DEMO_USERNAME = "admin"
+DEMO_PASSWORD = "admin123"
+TOKEN_LIFETIME_SECONDS = 300
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    global current_token, token_expires_at
+
+    data = request.get_json()
+
+    if data.get("username") == DEMO_USERNAME and data.get("password") == DEMO_PASSWORD:
+        token = secrets.token_hex()
+        current_token = token
+        token_expires_at = time.time() + TOKEN_LIFETIME_SECONDS
+        return jsonify({
+            "token": token,
+            "expires_in": TOKEN_LIFETIME_SECONDS,
+        }), 200
+
+    return jsonify({"error": "Invalid credentials"}), 401
+
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000)
+    
