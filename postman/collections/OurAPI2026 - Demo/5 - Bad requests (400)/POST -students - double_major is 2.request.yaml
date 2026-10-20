@@ -1,0 +1,25 @@
+$kind: http-request
+name: POST /students - double_major is 2
+url: "{{base_url}}/students"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "first_name": "Sara",
+      "last_name": "Trabelsi",
+      "level": "1",
+      "double_major": 2
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 400 Bad Request", function () {
+          pm.response.to.have.status(400);
+      });
+    language: text/javascript
+order: 2000

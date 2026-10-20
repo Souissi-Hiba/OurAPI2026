@@ -1,0 +1,26 @@
+$kind: http-request
+name: POST /students - Amine
+description: "Second student. Expect id_s = 2: the ID counts up by itself."
+url: "{{base_url}}/students"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "first_name": "Amine",
+      "last_name": "Ben Salah",
+      "level": "2",
+      "double_major": 1
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 201 Created", function () {
+          pm.response.to.have.status(201);
+      });
+    language: text/javascript
+order: 2000

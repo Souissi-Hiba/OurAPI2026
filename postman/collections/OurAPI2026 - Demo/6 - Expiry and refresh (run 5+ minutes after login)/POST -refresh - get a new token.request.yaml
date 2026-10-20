@@ -1,0 +1,21 @@
+$kind: http-request
+name: POST /refresh - get a new token
+description: The current token, even expired, buys a new one. The script saves the new token.
+url: "{{base_url}}/refresh"
+method: POST
+headers:
+  Authorization: Bearer {{token}}
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 200 OK", function () {
+          pm.response.to.have.status(200);
+      });
+
+      if (pm.response.code === 200) {
+          pm.collectionVariables.set("token", pm.response.json().token);
+      }
+    language: text/javascript
+order: 2000

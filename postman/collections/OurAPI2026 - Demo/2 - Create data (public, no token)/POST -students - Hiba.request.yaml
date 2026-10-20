@@ -1,0 +1,26 @@
+$kind: http-request
+name: POST /students - Hiba
+description: Creating a student is public. Expect id_s = 1.
+url: "{{base_url}}/students"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "first_name": "Hiba",
+      "last_name": "Souissi",
+      "level": "3",
+      "double_major": 0
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 201 Created", function () {
+          pm.response.to.have.status(201);
+      });
+    language: text/javascript
+order: 1000

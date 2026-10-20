@@ -1,0 +1,15 @@
+$kind: http-request
+name: GET /reports/99 - not found
+description: Report 99 does not exist.
+url: "{{base_url}}/reports/99"
+method: GET
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 404 Not Found", function () {
+          pm.response.to.have.status(404);
+      });
+    language: text/javascript
+order: 3000

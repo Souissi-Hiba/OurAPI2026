@@ -1,0 +1,29 @@
+$kind: http-request
+name: POST /reports - written by student 1
+description: student_id 1 links the report to Hiba. Expect id_r = 1.
+url: "{{base_url}}/reports"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Building a REST API with Flask",
+      "type": "internship",
+      "keyword_1": "flask",
+      "keyword_2": "api",
+      "keyword_3": "python",
+      "release_date": "2026-10-18",
+      "student_id": 1
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 201 Created", function () {
+          pm.response.to.have.status(201);
+      });
+    language: text/javascript
+order: 3000

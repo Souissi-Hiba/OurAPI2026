@@ -1,0 +1,12 @@
+$kind: collection
+description: "All demo requests in recording order. Start the server first: .venv\\Scripts\\python.exe app.py"
+variables:
+  - key: base_url
+    value: http://127.0.0.1:5000
+    disabled: false
+  - key: token
+    value: ""
+    disabled: false
+  - key: bearer_token_1bdj
+    secret: true
+    disabled: false

@@ -1,0 +1,15 @@
+$kind: http-request
+name: GET / - server is running
+description: First proof that the server answers.
+url: "{{base_url}}/"
+method: GET
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 200 OK", function () {
+          pm.response.to.have.status(200);
+      });
+    language: text/javascript
+order: 1000

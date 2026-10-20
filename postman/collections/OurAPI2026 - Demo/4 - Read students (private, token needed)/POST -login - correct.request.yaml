@@ -1,0 +1,28 @@
+$kind: http-request
+name: POST /login - correct
+description: Returns a token valid 300 seconds. The test script saves it in the token variable automatically.
+url: "{{base_url}}/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "admin",
+      "password": "admin123"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 200 OK", function () {
+          pm.response.to.have.status(200);
+      });
+
+      if (pm.response.code === 200) {
+          pm.collectionVariables.set("token", pm.response.json().token);
+      }
+    language: text/javascript
+order: 3000

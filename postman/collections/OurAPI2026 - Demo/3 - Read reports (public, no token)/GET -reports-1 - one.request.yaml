@@ -1,0 +1,14 @@
+$kind: http-request
+name: GET /reports/1 - one
+url: "{{base_url}}/reports/1"
+method: GET
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 200 OK", function () {
+          pm.response.to.have.status(200);
+      });
+    language: text/javascript
+order: 2000
