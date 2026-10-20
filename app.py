@@ -19,13 +19,20 @@ current_token = None
 token_expires_at = 0
 
 # ===== HELPERS =====
+def get_bearer_token():
+    authorization = request.headers.get("Authorization")
+    parts = authorization.split() if authorization else []
+    if len(parts) == 2 and parts[0] == "Bearer":
+        return parts[1]
+    return ""
+
+
 def check_token():
     authorization = request.headers.get("Authorization")
     if not authorization:
         return jsonify({"error": "Token required"}), 401
 
-    parts = authorization.split()
-    token = parts[1] if len(parts) == 2 and parts[0] == "Bearer" else ""
+    token = get_bearer_token()
 
     if token != current_token:
         return jsonify({"error": "Invalid token"}), 403
@@ -139,6 +146,25 @@ def login():
         }), 200
 
     return jsonify({"error": "Invalid credentials"}), 401
+
+
+@app.route("/refresh", methods=["POST"])
+def refresh():
+    global current_token, token_expires_at
+
+    if not request.headers.get("Authorization"):
+        return jsonify({"error": "Token required"}), 401
+
+    token = get_bearer_token()
+    if token != current_token:
+        return jsonify({"error": "Invalid token"}), 403
+
+    current_token = secrets.token_hex()
+    token_expires_at = time.time() + TOKEN_LIFETIME_SECONDS
+    return jsonify({
+        "token": current_token,
+        "expires_in": TOKEN_LIFETIME_SECONDS,
+    }), 200
 
 
 if __name__ == "__main__":
