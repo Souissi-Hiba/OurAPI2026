@@ -19,6 +19,13 @@ current_token = None
 token_expires_at = 0
 
 # ===== HELPERS =====
+def missing_field(data, fields):
+    for field in fields:
+        if field not in data:
+            return field
+    return None
+
+
 def get_bearer_token():
     authorization = request.headers.get("Authorization")
     parts = authorization.split() if authorization else []
@@ -52,7 +59,17 @@ def home():
 def create_report():
     global next_report_id
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "JSON body required"}), 400
+
+    field = missing_field(data, [
+        "title", "type", "keyword_1", "keyword_2",
+        "keyword_3", "release_date", "student_id",
+    ])
+    if field:
+        return jsonify({"error": f"Missing field: {field}"}), 400
+
     report = {
         "id_r": next_report_id,
         "title": data["title"],
@@ -88,7 +105,19 @@ def get_report_by_id(id_r):
 def create_student():
     global next_student_id
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "JSON body required"}), 400
+
+    field = missing_field(data, [
+        "first_name", "last_name", "level", "double_major",
+    ])
+    if field:
+        return jsonify({"error": f"Missing field: {field}"}), 400
+
+    if data["double_major"] not in (0, 1):
+        return jsonify({"error": "double_major must be 0 or 1"}), 400
+
     student = {
         "id_s": next_student_id,
         "first_name": data["first_name"],
@@ -134,7 +163,13 @@ TOKEN_LIFETIME_SECONDS = 300
 def login():
     global current_token, token_expires_at
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "JSON body required"}), 400
+
+    field = missing_field(data, ["username", "password"])
+    if field:
+        return jsonify({"error": f"Missing field: {field}"}), 400
 
     if data.get("username") == DEMO_USERNAME and data.get("password") == DEMO_PASSWORD:
         token = secrets.token_hex()
@@ -167,6 +202,6 @@ def refresh():
     }), 200
 
 
+# ===== RUN =====
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000)
-    
