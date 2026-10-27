@@ -6,6 +6,7 @@ A Flask REST API for managing students and reports.
 
 - Python
 - Flask
+- Docker
 - uv
 - Postman
 
@@ -27,6 +28,21 @@ A Flask REST API for managing students and reports.
 
    ```powershell
    .venv\Scripts\python.exe app.py
+   ```
+
+## Run with Docker
+
+1. Open Docker Desktop and wait for "Engine running".
+2. Build the image:
+
+   ```powershell
+   docker build -t ourapi2026 .
+   ```
+
+3. Run the image, then open http://127.0.0.1:5000:
+
+   ```powershell
+   docker run --rm -p 5000:5000 ourapi2026
    ```
 
 ## Endpoints
