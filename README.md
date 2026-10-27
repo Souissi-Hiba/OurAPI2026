@@ -42,7 +42,7 @@ A Flask REST API for managing students and reports.
 3. Run the image, then open http://127.0.0.1:5000:
 
    ```powershell
-   docker run --rm -p 5000:5000 ourapi2026
+   docker run --rm --name ourapi2026 -p 5000:5000 ourapi2026
    ```
 
 ## Endpoints
