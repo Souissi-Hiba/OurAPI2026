@@ -168,7 +168,13 @@ def get_all_students():
     if token_error:
         return token_error
 
-    return jsonify(students)
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM students")
+    rows = cursor.fetchall()
+    connection.close()
+
+    return jsonify(rows)
 
 
 @app.route("/students/<int:id_s>", methods=["GET"])
@@ -177,9 +183,14 @@ def get_student_by_id(id_s):
     if token_error:
         return token_error
 
-    for student in students:
-        if student["id_s"] == id_s:
-            return jsonify(student)
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM students WHERE id_s = %s", (id_s,))
+    row = cursor.fetchone()
+    connection.close()
+
+    if row:
+        return jsonify(row)
 
     return jsonify({"error": "Student not found"}), 404
 
