@@ -125,14 +125,25 @@ def create_report():
 
 @app.route("/reports", methods=["GET"])
 def get_all_reports():
-    return jsonify(reports)
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM reports")
+    rows = cursor.fetchall()
+    connection.close()
+
+    return jsonify(rows)
 
 
 @app.route("/reports/<int:id_r>", methods=["GET"])
 def get_report_by_id(id_r):
-    for report in reports:
-        if report["id_r"] == id_r:
-            return jsonify(report)
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM reports WHERE id_r = %s", (id_r,))
+    row = cursor.fetchone()
+    connection.close()
+
+    if row:
+        return jsonify(row)
 
     return jsonify({"error": "Report not found"}), 404
 
