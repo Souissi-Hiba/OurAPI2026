@@ -13,10 +13,6 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 # ===== DATA =====
-students = []
-reports = []
-next_student_id = 1
-next_report_id = 1
 current_token = None
 token_expires_at = 0
 
@@ -72,8 +68,6 @@ def home():
 # ===== REPORTS (public) =====
 @app.route("/reports", methods=["POST"])
 def create_report():
-    global next_report_id
-
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         return jsonify({"error": "JSON body required"}), 400
@@ -151,8 +145,6 @@ def get_report_by_id(id_r):
 # ===== STUDENTS (private) =====
 @app.route("/students", methods=["POST"])
 def create_student():
-    global next_student_id
-
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         return jsonify({"error": "JSON body required"}), 400
