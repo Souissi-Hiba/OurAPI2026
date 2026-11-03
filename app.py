@@ -133,15 +133,31 @@ def create_student():
     if data["double_major"] not in (0, 1):
         return jsonify({"error": "double_major must be 0 or 1"}), 400
 
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        INSERT INTO students (first_name, last_name, level, double_major)
+        VALUES (%s, %s, %s, %s)
+        """,
+        (
+            data["first_name"],
+            data["last_name"],
+            data["level"],
+            data["double_major"],
+        ),
+    )
+    connection.commit()
+    student_id = cursor.lastrowid
+    connection.close()
+
     student = {
-        "id_s": next_student_id,
+        "id_s": student_id,
         "first_name": data["first_name"],
         "last_name": data["last_name"],
         "level": data["level"],
         "double_major": data["double_major"],
     }
-    next_student_id += 1
-    students.append(student)
 
     return jsonify(student), 201
 
