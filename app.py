@@ -85,8 +85,32 @@ def create_report():
     if field:
         return jsonify({"error": f"Missing field: {field}"}), 400
 
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        INSERT INTO reports (
+            title, type, keyword_1, keyword_2, keyword_3,
+            release_date, student_id
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """,
+        (
+            data["title"],
+            data["type"],
+            data["keyword_1"],
+            data["keyword_2"],
+            data["keyword_3"],
+            data["release_date"],
+            data["student_id"],
+        ),
+    )
+    connection.commit()
+    report_id = cursor.lastrowid
+    connection.close()
+
     report = {
-        "id_r": next_report_id,
+        "id_r": report_id,
         "title": data["title"],
         "type": data["type"],
         "keyword_1": data["keyword_1"],
@@ -95,8 +119,6 @@ def create_report():
         "release_date": data["release_date"],
         "student_id": data["student_id"],
     }
-    next_report_id += 1
-    reports.append(report)
 
     return jsonify(report), 201
 
