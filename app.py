@@ -5,6 +5,8 @@
 import secrets
 import time
 
+import pymysql
+
 from flask import Flask, jsonify, request
 
 # ===== SETUP =====
@@ -48,6 +50,19 @@ def check_token():
         return jsonify({"error": "Token expired"}), 401
 
     return None
+
+
+# Keeps the database settings in one place.
+def get_connection():
+    return pymysql.connect(
+        host="127.0.0.1",
+        port=3307,
+        user="root",
+        password="root123",
+        database="university",
+        cursorclass=pymysql.cursors.DictCursor,
+    )
+
 
 # ===== HEALTH CHECK =====
 @app.route("/")
