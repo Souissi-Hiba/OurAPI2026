@@ -2,9 +2,9 @@
 Student project: Flask REST API (Part 1 of web services course).
 
 ## Scope
-- Data is stored in two Python lists only (students, reports). The token is kept in two simple variables (current_token, token_expires_at). No dictionary or third list, no database, no ORM.
-- Only Flask. Do not install other libraries unless I ask.
-- Everything stays in app.py. Do not create new files or folders unless I ask.
+- Part 2: data is stored in MySQL (database university, tables students and reports) instead of lists. MySQL runs in the Docker container part2-mysql on 127.0.0.1 port 3307, never port 3306. The token stays in two simple variables (current_token, token_expires_at). Use plain SQL queries with PyMySQL. No ORM, no SQLAlchemy.
+- Only Flask and PyMySQL. Do not install other libraries unless I ask.
+- Everything stays in app.py, except schema.sql for the table definitions. Do not create other files or folders unless I ask.
 - Only build the endpoints listed in README.md.
 
 ## Style
