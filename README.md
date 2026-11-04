@@ -53,6 +53,8 @@ A Flask REST API for managing students and reports.
 | POST | `/reports` | Create a report | No |
 | GET | `/reports` | Get all reports | No |
 | GET | `/reports/<id>` | Get one report | No |
+| PUT | `/reports/<id>` | Update a report | No |
+| DELETE | `/reports/<id>` | Delete a report | No |
 | POST | `/students` | Create a student | No |
 | GET | `/students` | Get all students | Yes |
 | GET | `/students/<id>` | Get one student | Yes |

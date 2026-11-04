@@ -129,6 +129,80 @@ def get_report_by_id(id_r):
     return jsonify({"error": "Report not found"}), 404
 
 
+@app.route("/reports/<int:id_r>", methods=["PUT"])
+def update_report(id_r):
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM reports WHERE id_r = %s", (id_r,))
+    row = cursor.fetchone()
+    if not row:
+        connection.close()
+        return jsonify({"error": "Report not found"}), 404
+
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        connection.close()
+        return jsonify({"error": "JSON body required"}), 400
+
+    field = missing_field(data, [
+        "title", "type", "keyword_1", "keyword_2",
+        "keyword_3", "release_date", "student_id",
+    ])
+    if field:
+        connection.close()
+        return jsonify({"error": f"Missing field: {field}"}), 400
+
+    cursor.execute(
+        """
+        UPDATE reports
+        SET title = %s, type = %s, keyword_1 = %s, keyword_2 = %s,
+            keyword_3 = %s, release_date = %s, student_id = %s
+        WHERE id_r = %s
+        """,
+        (
+            data["title"],
+            data["type"],
+            data["keyword_1"],
+            data["keyword_2"],
+            data["keyword_3"],
+            data["release_date"],
+            data["student_id"],
+            id_r,
+        ),
+    )
+    connection.commit()
+    connection.close()
+
+    report = {
+        "id_r": id_r,
+        "title": data["title"],
+        "type": data["type"],
+        "keyword_1": data["keyword_1"],
+        "keyword_2": data["keyword_2"],
+        "keyword_3": data["keyword_3"],
+        "release_date": data["release_date"],
+        "student_id": data["student_id"],
+    }
+    return jsonify(report), 200
+
+
+@app.route("/reports/<int:id_r>", methods=["DELETE"])
+def delete_report(id_r):
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM reports WHERE id_r = %s", (id_r,))
+    row = cursor.fetchone()
+    if not row:
+        connection.close()
+        return jsonify({"error": "Report not found"}), 404
+
+    cursor.execute("DELETE FROM reports WHERE id_r = %s", (id_r,))
+    connection.commit()
+    connection.close()
+
+    return jsonify({"message": "Report deleted"}), 200
+
+
 # ===== STUDENTS (private) =====
 @app.route("/students", methods=["POST"])
 def create_student():
