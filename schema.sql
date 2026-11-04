@@ -19,3 +19,10 @@ CREATE TABLE reports (
     student_id INT NOT NULL,
     FOREIGN KEY (student_id) REFERENCES students(id_s)
 );
+
+-- Stores users.
+CREATE TABLE users (
+    id_u INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    password VARCHAR(100) NOT NULL
+);

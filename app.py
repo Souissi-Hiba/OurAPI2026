@@ -208,8 +208,6 @@ def get_student_by_id(id_s):
 
 
 # ===== TOKEN =====
-DEMO_USERNAME = "admin"
-DEMO_PASSWORD = "admin123"
 TOKEN_LIFETIME_SECONDS = 300
 
 
@@ -225,7 +223,16 @@ def login():
     if field:
         return jsonify({"error": f"Missing field: {field}"}), 400
 
-    if data.get("username") == DEMO_USERNAME and data.get("password") == DEMO_PASSWORD:
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT * FROM users WHERE username = %s AND password = %s",
+        (data["username"], data["password"]),
+    )
+    row = cursor.fetchone()
+    connection.close()
+
+    if row:
         token = secrets.token_hex()
         current_token = token
         token_expires_at = time.time() + TOKEN_LIFETIME_SECONDS
