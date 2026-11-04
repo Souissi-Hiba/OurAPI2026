@@ -1,0 +1,15 @@
+$kind: http-request
+name: DELETE /students/2 - no token
+description: "Private: no badge."
+url: "{{base_url}}/students/2"
+method: DELETE
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 401 Unauthorized", function () {
+          pm.response.to.have.status(401);
+      });
+    language: text/javascript
+order: 1000

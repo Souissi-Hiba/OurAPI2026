@@ -1,0 +1,17 @@
+$kind: http-request
+name: DELETE /students/2
+description: No report left, so the delete works. Run SELECT * FROM students after it.
+url: "{{base_url}}/students/2"
+method: DELETE
+headers:
+  Authorization: Bearer {{token}}
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 200 OK", function () {
+          pm.response.to.have.status(200);
+      });
+    language: text/javascript
+order: 4000

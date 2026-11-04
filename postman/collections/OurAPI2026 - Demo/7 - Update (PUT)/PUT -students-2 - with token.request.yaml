@@ -1,0 +1,27 @@
+$kind: http-request
+name: PUT /students/2 - with token
+description: "Run SELECT after it: level goes 3 -> 4 and double_major 0 -> 1."
+url: "{{base_url}}/students/2"
+method: PUT
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+body:
+  type: json
+  content: |-
+    {
+      "first_name": "Hiba",
+      "last_name": "Souissi",
+      "level": "4",
+      "double_major": 1
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 200 OK", function () {
+          pm.response.to.have.status(200);
+      });
+    language: text/javascript
+order: 5000

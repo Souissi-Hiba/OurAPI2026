@@ -4,9 +4,11 @@ variables:
   - key: base_url
     value: http://127.0.0.1:5000
     disabled: false
+    secret: false
   - key: token
     value: ""
     disabled: false
+    secret: false
   - key: bearer_token_1bdj
     secret: true
     disabled: false
