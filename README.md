@@ -6,6 +6,8 @@ A Flask REST API for managing students and reports.
 
 - Python
 - Flask
+- MySQL
+- PyMySQL
 - Docker
 - uv
 - Postman
@@ -18,10 +20,10 @@ A Flask REST API for managing students and reports.
    uv venv .venv
    ```
 
-2. Install Flask:
+2. Install the dependencies:
 
    ```powershell
-   uv pip install Flask
+   uv pip install -r requirements.txt
    ```
 
 3. Run the app:
@@ -29,6 +31,28 @@ A Flask REST API for managing students and reports.
    ```powershell
    .venv\Scripts\python.exe app.py
    ```
+
+## Database (MySQL)
+
+1. Start MySQL in Docker:
+
+   ```powershell
+   docker run --name part2-mysql -e MYSQL_ROOT_PASSWORD=root123 -e MYSQL_DATABASE=university -p 3307:3306 -v mysql_data:/var/lib/mysql -d mysql:8.4
+   ```
+
+2. Create the tables:
+
+   ```powershell
+   Get-Content schema.sql | docker exec -i part2-mysql mysql -uroot -proot123 university
+   ```
+
+3. Load the demo data and the login user (admin / admin123):
+
+   ```powershell
+   Get-Content seed.sql | docker exec -i part2-mysql mysql -uroot -proot123 university
+   ```
+
+The API connects to MySQL on 127.0.0.1 port 3307 (see db.py).
 
 ## Run with Docker
 
