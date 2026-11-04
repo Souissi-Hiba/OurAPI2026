@@ -281,6 +281,91 @@ def get_student_by_id(id_s):
     return jsonify({"error": "Student not found"}), 404
 
 
+@app.route("/students/<int:id_s>", methods=["PUT"])
+def update_student(id_s):
+    token_error = check_token()
+    if token_error:
+        return token_error
+
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM students WHERE id_s = %s", (id_s,))
+    row = cursor.fetchone()
+    if not row:
+        connection.close()
+        return jsonify({"error": "Student not found"}), 404
+
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        connection.close()
+        return jsonify({"error": "JSON body required"}), 400
+
+    field = missing_field(data, [
+        "first_name", "last_name", "level", "double_major",
+    ])
+    if field:
+        connection.close()
+        return jsonify({"error": f"Missing field: {field}"}), 400
+
+    if data["double_major"] not in (0, 1):
+        connection.close()
+        return jsonify({"error": "double_major must be 0 or 1"}), 400
+
+    cursor.execute(
+        """
+        UPDATE students
+        SET first_name = %s, last_name = %s, level = %s,
+            double_major = %s
+        WHERE id_s = %s
+        """,
+        (
+            data["first_name"],
+            data["last_name"],
+            data["level"],
+            data["double_major"],
+            id_s,
+        ),
+    )
+    connection.commit()
+    connection.close()
+
+    student = {
+        "id_s": id_s,
+        "first_name": data["first_name"],
+        "last_name": data["last_name"],
+        "level": data["level"],
+        "double_major": data["double_major"],
+    }
+    return jsonify(student), 200
+
+
+@app.route("/students/<int:id_s>", methods=["DELETE"])
+def delete_student(id_s):
+    token_error = check_token()
+    if token_error:
+        return token_error
+
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM students WHERE id_s = %s", (id_s,))
+    row = cursor.fetchone()
+    if not row:
+        connection.close()
+        return jsonify({"error": "Student not found"}), 404
+
+    cursor.execute("SELECT * FROM reports WHERE student_id = %s", (id_s,))
+    report = cursor.fetchone()
+    if report:
+        connection.close()
+        return jsonify({"error": "Student still has reports"}), 409
+
+    cursor.execute("DELETE FROM students WHERE id_s = %s", (id_s,))
+    connection.commit()
+    connection.close()
+
+    return jsonify({"message": "Student deleted"}), 200
+
+
 # ===== TOKEN =====
 TOKEN_LIFETIME_SECONDS = 300
 
